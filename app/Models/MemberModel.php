@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Member;
 use App\Traits\HasTimestampAccessors;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -60,5 +61,9 @@ class MemberModel extends Model implements Member
         return $this->date_of_birth;
     }
 
+    public function getMyAge(): int
+    {
+        return Carbon::parse($this->getDateOfBirth())->age;
+    }
 
 }

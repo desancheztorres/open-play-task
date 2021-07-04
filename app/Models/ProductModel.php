@@ -91,5 +91,4 @@ class ProductModel extends Model implements Product
     {
         return $this->belongsTo(PricingOptionModel::class);
     }
-
 }

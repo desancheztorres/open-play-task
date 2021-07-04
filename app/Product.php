@@ -4,7 +4,7 @@ namespace App;
 
 
 /**
- * Interface Product
+ * Interface Products
  * @package OpenPlay\Pricing\Products
  */
 interface Product
