@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Models\PricingModifierModel;
+use App\Models\PricingOptionModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -24,5 +26,14 @@ class PricingModifierTest extends TestCase
             ),
             1
         );
+    }
+
+    /** @test  */
+    public function a_pricing_modifier_belongs_to_many_pricing_options()
+    {
+        $pricingModifier = PricingModifierModel::factory()->create();
+        $pricingOption = PricingOptionModel::factory()->create();
+
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $pricingModifier->pricingOptions);
     }
 }

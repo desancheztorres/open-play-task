@@ -72,7 +72,7 @@ class PriceCalculator
                         break;
                     case 'membership_type_flat_adjustment':
                         $resp = $this->membershipAdjustment($modifier->getSettings());
-                        if ($resp) {
+                        if ($resp >=0) {
                             $thePrices[] = $resp;
                         }
                         break;
@@ -132,7 +132,7 @@ class PriceCalculator
             };
 
             if (array_key_exists('price', $data) and $this->member->membership_type === 'platinum') {
-                return -1;
+                return 0;
             };
         }
     }

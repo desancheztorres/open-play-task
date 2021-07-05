@@ -12,16 +12,18 @@ use Illuminate\Support\Collection;
 
 /**
  * Class PricingModifierModel
+ *
  * @package App/Models
- * @property int $id
- * @property string $name
- * @property string $type
- * @property array $settings
+ * @property int            $id
+ * @property string         $name
+ * @property string         $type
+ * @property array          $settings
  * @property \DateTime|null $created_at
  * @property \DateTime|null $updated_at
  */
 class PricingModifierModel extends Model implements PricingModifier
 {
+
     use HasTimestampAccessors, HasFactory;
 
     /**
@@ -77,10 +79,15 @@ class PricingModifierModel extends Model implements PricingModifier
     /**
      * @return BelongsToMany
      */
-    public function pricingOptions() : BelongsToMany
+    public function pricingOptions(): BelongsToMany
     {
-        return $this->belongsToMany(PricingOptionModel::class)
-            ->using(PricingOptionPricingModifierPivot::class);
+        return $this->belongsToMany(
+            PricingOptionModel::class,
+            'pricing_option_pricing_modifiers',
+            'pricing_modifier_id',
+            'pricing_option_id'
+        )
+                    ->using(PricingOptionPricingModifierPivot::class);
     }
 
 }
