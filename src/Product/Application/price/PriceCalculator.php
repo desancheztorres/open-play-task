@@ -7,14 +7,23 @@ namespace Src\Product\Application\price;
 use App\Models\MemberModel;
 use App\Models\ProductModel;
 use App\Models\VenueModel;
+use App\PriceModifier\BasicAdjustment;
+use App\PriceModifier\BasicMultiplier;
+use App\PriceModifier\MemberAgeMultiplier;
+use App\PriceModifier\MembershipAdjustment;
+use App\PriceModifier\OverridePrice;
+use App\PriceModifier\VenueOverride;
+use Illuminate\Support\Arr;
 
 class PriceCalculator
 {
 
-    protected ProductModel $product;
-    protected MemberModel $member;
-    protected VenueModel $venue;
-    protected $thePrice;
+    private ProductModel $product;
+    private MemberModel $member;
+    private VenueModel $venue;
+
+    protected $basePrice;
+    protected array $prices;
 
     /**
      * PriceCalculator constructor.
@@ -34,112 +43,58 @@ class PriceCalculator
     {
         $pricingOptions            = $this->product->pricingOption;
         $availablePricingModifiers = $pricingOptions->currentPricingModifiers;
-        $this->thePrice            = $pricingOptions->getPrice();
+        $this->basePrice           = $pricingOptions->getPrice();
 
         if (! $availablePricingModifiers) {
-            return $pricingOptions->getPrice();
+            return $this->basePrice;
         } else {
-            $this->thePrice = $pricingOptions->getPrice();
 
-            $thePrices = [$pricingOptions->getPrice()];
+            $this->prices = [$this->basePrice];
 
             foreach ($availablePricingModifiers as $modifier):
 
                 switch ($modifier->getType()) {
                     case 'basic_override':
-                        $resp = $this->overridePrice($modifier->getSettings());
-                        if ($resp) {
-                            $thePrices[] = $resp;
-                        }
+                        $overridePrice  = new OverridePrice($modifier->getSettings());
+                        $this->prices[] = $overridePrice->modify();
                         break;
                     case 'basic_adjustment':
-                        $resp = $this->basicAdjustment($modifier->getSettings());
-                        if ($resp) {
-                            $thePrices[] = $resp;
-                        }
+                        $basicAdjustment = new BasicAdjustment($modifier->getSettings(), $this->basePrice);
+                        $this->prices[]  = $basicAdjustment->modify();
                         break;
                     case 'member_age_multiplier':
-                        $resp = $this->ageMultiplier($modifier->getSettings());
-                        if ($resp) {
-                            $thePrices[] = $resp;
-                        }
+                        $memberAgeMultipplier =
+                            new MemberAgeMultiplier($modifier->getSettings(), $this->basePrice, $this->member);
+                        $this->prices[]       = $memberAgeMultipplier->modify();
                         break;
                     case 'venue_override':
-                        $resp = $this->venueOverride($modifier->getSettings());
-                        if ($resp) {
-                            $thePrices[] = $resp;
-                        }
+                        $venueOverride  = new VenueOverride($modifier->getSettings(), $this->basePrice, $this->venue);
+                        $this->prices[] = $venueOverride->modify();
                         break;
                     case 'membership_type_flat_adjustment':
-                        $resp = $this->membershipAdjustment($modifier->getSettings());
-                        if ($resp >=0) {
-                            $thePrices[] = $resp;
-                        }
+                        $membershipAdjustment =
+                            new MembershipAdjustment($modifier->getSettings(), $this->basePrice, $this->member);
+                        $this->prices[]       = $membershipAdjustment->modify();
                         break;
                     case 'basic_multiplier':
-                        $resp = $this->basicMultiplier($modifier->getSettings());
-                        if ($resp) {
-                            $thePrices[] = $resp;
-                        }
+                        $basicMultiplier = new BasicMultiplier($modifier->getSettings(), $this->basePrice);
+                        $this->prices[]  = $basicMultiplier->modify();
                         break;
                 }
             endforeach;
-
-            sort($thePrices);
-
-            $lowerPrice = $thePrices[0];
         }
 
-        return $lowerPrice >= 0 ? $lowerPrice : 0;
+        return $this->getLowerPrice() >= 0 ? $this->getLowerPrice() : 0;
     }
 
-    protected function overridePrice(array $data)
+    protected function sortPrices(): array
     {
-        return $data['price'];
+        return Arr::sort($this->prices);
     }
 
-    protected function basicAdjustment(array $data)
+    protected function getLowerPrice()
     {
-        return $this->thePrice + $data['adjustment'];
-    }
-
-    protected function ageMultiplier(array $data)
-    {
-        if ($this->member->getMyAge() > $data['age_range']['from'] and
-            $this->member->getMyAge() < $data['age_range']['to']) {
-            return $this->thePrice * $data['multiplier'];
-        }
-    }
-
-    protected function venueOverride(array $data)
-    {
-        if ((in_array($this->venue->getLocation(), $data['venue_locations']))) {
-            if (array_key_exists('multiplier', $data)) {
-                return $this->thePrice * $data['multiplier'];
-            };
-
-            if (array_key_exists('price', $data)) {
-                return $data['price'];
-            };
-        }
-    }
-
-    protected function membershipAdjustment(array $data)
-    {
-        if (in_array($this->member->getMembershipType(), $data['membership_types'])) {
-            if (array_key_exists('adjustment', $data)) {
-                return $this->thePrice + $data['adjustment'];
-            };
-
-            if (array_key_exists('price', $data) and $this->member->membership_type === 'platinum') {
-                return 0;
-            };
-        }
-    }
-
-    protected function basicMultiplier(array $data)
-    {
-        return $this->thePrice * $data['multiplier'];
+        return head($this->sortPrices());
     }
 
 }
