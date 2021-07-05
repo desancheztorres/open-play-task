@@ -84,4 +84,13 @@ We've provided interfaces and models for each object in the `App` and `App/Model
 - By default, you can connect to the MySQL container on `localhost` port `3308`.
 - If this clashes with your local setup it can be overridden using `FORWARD_DB_PORT=3309` in the `.env` and restart sail.
 
-
+#### The Task
+- I decided to use Hexagonal Architecture to have the domain and business logical separate from Laravel Framework and then will be easier in case to migrate to other frameworks.
+- The main files are in the folder src/ and it has been added in composer.json.
+- The main file that calculates the lowest price is located in Src\Product\Application\price. It's a use case en the application layout. The issue here is that the usecase knows about Laravel code and this only should be in infrastructure layout, but I found some issues when I was implementing it and I added some Laravel helpers and models in application layout.
+- The main issue I found is that the data in the database changes every time you migrate your files and I realized very late that membership_type_flat_adjustment has two different types of settings and sometimes there is only one. So that was the main reason I got some errors.
+- I added some test to make sure that all the relationships and database works perfectly.
+- I added a feature test with some examples about price discounts.
+- It was an easy task, but when I tried to make the cleanest code as possible, I found some difficulties.
+- I really enjoyed it, I learned a lot, there were some things I didn't do it for ages, and it was good to remember them.
+- And the way it is done, the relationships, tables, a json for settings, it is really good, it makes a lot of sense.
