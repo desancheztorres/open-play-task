@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\PricingOption;
 use App\Product;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasTimestampAccessors;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class ProductModel extends Model implements Product
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
+    
 
     /**
      * @var string

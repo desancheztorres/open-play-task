@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Traits\HasTimestampAccessors;
 use App\Venue;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class VenueModel extends Model implements Venue
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
 
     protected $table = 'venues';
 

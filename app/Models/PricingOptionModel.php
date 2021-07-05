@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\PricingOption;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasTimestampAccessors;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,7 +24,7 @@ use Illuminate\Support\Collection;
  */
 class PricingOptionModel extends Model implements PricingOption
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
 
     protected $table = 'pricing_options';
 

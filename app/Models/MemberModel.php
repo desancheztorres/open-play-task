@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Member;
 use App\Traits\HasTimestampAccessors;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MemberModel extends Model implements Member
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
 
     /**
      * @inheritDoc

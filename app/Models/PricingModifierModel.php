@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use App\PricingModifier;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasTimestampAccessors;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -21,7 +22,7 @@ use Illuminate\Support\Collection;
  */
 class PricingModifierModel extends Model implements PricingModifier
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
 
     /**
      * @var string

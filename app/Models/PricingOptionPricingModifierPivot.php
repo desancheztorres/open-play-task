@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use App\Traits\HasTimestampAccessors;
 
@@ -19,7 +20,7 @@ use App\Traits\HasTimestampAccessors;
  */
 class PricingOptionPricingModifierPivot extends Pivot
 {
-    use HasTimestampAccessors;
+    use HasTimestampAccessors, HasFactory;
 
     /**
      * @var string

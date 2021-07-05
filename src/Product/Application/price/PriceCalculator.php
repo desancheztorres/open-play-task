@@ -90,7 +90,7 @@ class PriceCalculator
             $lowerPrice = $thePrices[0];
         }
 
-        return $lowerPrice > 0 ? $lowerPrice : 0;
+        return $lowerPrice >= 0 ? $lowerPrice : 0;
     }
 
     protected function overridePrice(array $data)
@@ -127,7 +127,13 @@ class PriceCalculator
     protected function membershipAdjustment(array $data)
     {
         if (in_array($this->member->getMembershipType(), $data['membership_types'])) {
-            return $this->thePrice + $data['adjustment'];
+            if (array_key_exists('adjustment', $data)) {
+                return $this->thePrice + $data['adjustment'];
+            };
+
+            if (array_key_exists('price', $data) and $this->member->membership_type === 'platinum') {
+                return -1;
+            };
         }
     }
 
